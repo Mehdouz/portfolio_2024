@@ -12,11 +12,11 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 
 const humane = localFont({
-  src: "fonts/humane-Bold.woff2",
+  src: "fonts/humaneBold.woff2",
   variable: "--font-humane",
 });
 const roobert = localFont({
-  src: "fonts/roobertregular.woff2",
+  src: "fonts/roobertRegular.woff2",
   variable: "--font-roobert",
 });
 
