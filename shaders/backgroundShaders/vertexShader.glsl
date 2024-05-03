@@ -98,8 +98,8 @@ void main()
 
     vec4 modelPosition = modelMatrix * vec4(position, 1.0);
 
-    float elevation = sin(modelPosition.x * uWaveFrequency.x + uTime + pointer.x + (uScroll * 0.5)) *
-                      sin(modelPosition.y * uWaveFrequency.y + uTime + pointer.y + (uScroll * 0.5))
+    float elevation = sin(modelPosition.x * uWaveFrequency.x + uTime + pointer.x + uScroll) *
+                      sin(modelPosition.y * uWaveFrequency.y + uTime + pointer.y + uScroll)
                       * uWaveElevation;
 
     elevation += cnoise(vec3(modelPosition.xy + uTime * 0.2, 0.0)) * 0.5;

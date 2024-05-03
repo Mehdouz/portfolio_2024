@@ -4,7 +4,6 @@ import { shaderMaterial } from "@react-three/drei";
 import fragmentShader from "../shaders/backgroundShaders/fragmentShader.glsl";
 import vertexShader from "../shaders/backgroundShaders/vertexShader.glsl";
 
-// Tutorial: https://www.youtube.com/watch?v=f4s1h2YETNY
 const WaveMaterial = shaderMaterial(
   {
     uTime: 0,

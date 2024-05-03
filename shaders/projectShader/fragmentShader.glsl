@@ -3,6 +3,7 @@ uniform vec2 uAspectRatio;
 uniform vec2 uMouse;
 uniform vec2 uMouseIntro;
 uniform bool isHovered;
+uniform float uScroll;
 uniform float uIntro;
 uniform float uBulge;
 uniform float uTime;
@@ -118,8 +119,8 @@ void main() {
     vec2 mixMouse = mix(uMouseIntro, normalisedMouse, uIntro);
 
 
-    resizedUvs.x += (cnoise(vec3(resizedUvs.xy + uTime * 0.3, 1.0)) * 0.1) * uIntro;
-    resizedUvs.y += (cnoise(vec3(resizedUvs.xy + uTime * 0.3, 1.0)) * 0.1) * uIntro;
+    resizedUvs.x += (cnoise(vec3(resizedUvs.xy + uTime * 0.1, 1.0)) * 0.1) * uIntro + uScroll;
+    resizedUvs.y += (cnoise(vec3(resizedUvs.xy + uTime * 0.1, 1.0)) * 0.1) * uIntro + uScroll;
 
 
     vec2 bulgeUV = bulge(resizedUvs, mixMouse);

@@ -22,6 +22,17 @@ const config: Config = {
         humane: ["var(--font-humane)"],
         roobert: ["var(--font-roobert)"],
       },
+      colors: {
+        grey: {
+          50: "#322F2E",
+        },
+      },
+      letterSpacing: {
+        widest: ".20em",
+      },
+      margin: {
+        half: "-50%",
+      },
     },
   },
   plugins: [],
