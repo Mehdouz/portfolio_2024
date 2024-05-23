@@ -21,9 +21,7 @@ export default function WorkImageCanvas({ cover, imageAspect }) {
 
   const { size, pointer } = useThree();
 
-  const cachedTexture = useMemo(() => new TextureLoader().load(cover), [cover]);
-
-  if (shaderRef.current) shaderRef.current.uTexture = cachedTexture;
+  if (shaderRef.current) shaderRef.current.uTexture = cover;
 
   // Make the texture image have "cover" effect
   useEffect(() => {
@@ -82,7 +80,12 @@ export default function WorkImageCanvas({ cover, imageAspect }) {
         onPointerLeave={handlePointerLeave}
       >
         <planeGeometry args={[2, 2]} />
-        <workMaterial ref={shaderRef} key={WorkMaterial.key} cover={cover} />
+        <workMaterial
+          ref={shaderRef}
+          key={WorkMaterial.key}
+          cover={cover}
+          toneMapped={false}
+        />
       </mesh>
     </>
   );

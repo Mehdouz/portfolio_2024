@@ -56,6 +56,7 @@ export default function ProjectNumber({ index, ...props }) {
         {
           opacity: 1,
           y: 0,
+          delay: 0.6,
           scrollTrigger: {
             trigger: rootRef.current,
             start: "150px bottom",

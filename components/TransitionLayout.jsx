@@ -10,10 +10,11 @@ export default function TransitionLayout({ children }) {
   const lenis = useLenis();
 
   useGSAP(() => {
-    if (children.key !== displayChildren.key) {
+    if (children.props.activeWork !== displayChildren.props.activeWork) {
       if (timeline.duration() === 0) {
         // there are no outro animations, so immediately transition
         setDisplayChildren(children);
+        lenis.scrollTo(0, { immediate: true });
       } else {
         timeline.play().then(() => {
           // outro complete so reset to an empty paused timeline

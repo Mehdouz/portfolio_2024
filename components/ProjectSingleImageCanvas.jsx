@@ -38,19 +38,6 @@ export default function ProjectSingleImageCanvas({ cover, imageAspect }) {
     }
   }, [size]);
 
-  // useFrame(() => {
-  //   if (shaderRef.current) {
-  //     // Normalise pointer
-  //     mouseTarget.x = gsap.utils.interpolate(mouseTarget.x, pointer.x, 0.4);
-  //     mouseTarget.y = gsap.utils.interpolate(mouseTarget.y, pointer.y, 0.4);
-
-  //     shaderRef.current.uMouse.x = mouseTarget.x;
-  //     shaderRef.current.uMouse.y = mouseTarget.y;
-  //   }
-
-  //   shaderRef.current.uTime += 0.01;
-  // });
-
   return (
     <>
       <mesh ref={planRef}>

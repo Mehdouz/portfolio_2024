@@ -7,13 +7,11 @@ import ProjectNumber from "./ProjectNumber";
 import { OrthographicCamera } from "@react-three/drei";
 import SplitType from "split-type";
 import { TransitionContext } from "./TransitionContext";
-import { WorkContext } from "./WorkContext";
 import Link from "next/link";
 import useIsomorphicLayoutEffect from "@/hooks/useIsomorphicLayoutEffect";
 
 export default function ProjectHome({ project, index }) {
   const [isInView, setIsInView] = useState(false);
-  const [isDisabled, setIsDisabled] = useState(false);
   const rootRef = useRef(null);
   const imageRef = useRef(null);
   const projectListRef = useRef();
@@ -21,7 +19,6 @@ export default function ProjectHome({ project, index }) {
   const titleRef = useRef(null);
 
   const { timeline } = useContext(TransitionContext);
-  const { setActiveWork } = useContext(WorkContext);
 
   useIsomorphicLayoutEffect(() => {
     const titleText = new SplitType(titleRef.current, { types: "chars" });
@@ -126,22 +123,12 @@ export default function ProjectHome({ project, index }) {
     return () => ctx.revert();
   }, []);
 
-  const handleClick = (e) => {
-    setIsDisabled(true);
-    setActiveWork(index);
-    isDisabled ? e.preventDefault() : "";
-  };
-
   return (
     <div
       ref={rootRef}
       className="container mx-auto px-32 mb-44 cursor-pointer aspect-video "
     >
-      <Link
-        href={`work/${project?.title}`}
-        scroll={false}
-        onClick={(e) => handleClick(e)}
-      >
+      <Link href={`work/${project?.title}`} scroll={false}>
         <div className="relative text-white pointer-events-none">
           <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
             <ul

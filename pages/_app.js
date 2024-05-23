@@ -4,20 +4,23 @@ import TransitionLayout from "@/components/TransitionLayout";
 import "@/styles/globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import { WorkProvider } from "@/components/WorkContext";
+import WorkLayout from "@/components/WorkLayout";
 
 export default function App({ Component, pageProps, router }) {
   return (
     <>
       <Background />
-      <TransitionProvider>
-        <WorkProvider>
-          <SmoothScroll>
-            <TransitionLayout>
-              <Component key={router.route} {...pageProps} />
-            </TransitionLayout>
-          </SmoothScroll>
-        </WorkProvider>
-      </TransitionProvider>
+      <WorkProvider>
+        <WorkLayout>
+          <TransitionProvider>
+            <SmoothScroll>
+              <TransitionLayout>
+                <Component key={router.route} {...pageProps} />
+              </TransitionLayout>
+            </SmoothScroll>
+          </TransitionProvider>
+        </WorkLayout>
+      </WorkProvider>
     </>
   );
 }

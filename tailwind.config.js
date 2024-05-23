@@ -12,6 +12,9 @@ const config: Config = {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+        angie: "/projets/angie/angie.jpg",
+        axa: "/projets/axa/axa.jpg",
+        guerlain: "/projets/guerlain/guerlain.jpg",
       },
       aspectRatio: {
         "8/5": "8 / 5",
@@ -21,6 +24,7 @@ const config: Config = {
         ibm: ["var(--font-ibm)"],
         humane: ["var(--font-humane)"],
         roobert: ["var(--font-roobert)"],
+        avenir: ["var(--font-avenir)"],
       },
       colors: {
         grey: {

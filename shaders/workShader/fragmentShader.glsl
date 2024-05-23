@@ -16,4 +16,6 @@ void main() {
     // vec4 color = rgbShift(uTexture, resizedUvs);
 
     gl_FragColor = vec4(texture2D(uTexture, resizedUvs + (mixMouse * 0.008) * uIntro).r, texture2D(uTexture, resizedUvs - (mixMouse * 0.008) * uIntro).g, texture2D(uTexture, resizedUvs - (mixMouse * 0.005) * uIntro).b, 1.0);
+    #include <tonemapping_fragment>
+    #include <encodings_fragment>
 }

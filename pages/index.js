@@ -18,6 +18,11 @@ const roobert = localFont({
   variable: "--font-roobert",
 });
 
+const avenir = localFont({
+  src: "../public/fonts/avenirHeavy.woff2",
+  variable: "--font-avenir",
+});
+
 const fugaz = Fugaz_One({
   weight: "400",
   subsets: ["latin"],
@@ -30,7 +35,7 @@ const ibm_flex_mono = IBM_Plex_Mono({
   variable: "--font-ibm",
 });
 
-export default function Home() {
+export default function Home({ works }) {
   const rootRef = useRef();
   const textRef = useRef();
 
@@ -65,7 +70,7 @@ export default function Home() {
   return (
     <main
       ref={rootRef}
-      className={`px-20 ${fugaz.variable} ${ibm_flex_mono.variable} ${humane.variable} ${roobert.variable}`}
+      className={`px-20 ${fugaz.variable} ${ibm_flex_mono.variable} ${humane.variable} ${roobert.variable} ${avenir.variable}`}
     >
       <div className="relative">
         <div className="h-screen w-full flex items-center justify-end">
@@ -79,9 +84,19 @@ export default function Home() {
           </h1>
         </div>
         <div>
-          <Projects projects={projects} />
+          <Projects projects={works} />
         </div>
       </div>
     </main>
   );
+}
+
+export async function getServerSideProps() {
+  const works = Object.values(projects);
+
+  return {
+    props: {
+      works,
+    },
+  };
 }
