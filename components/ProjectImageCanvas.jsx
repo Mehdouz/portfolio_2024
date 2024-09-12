@@ -7,7 +7,7 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useLenis } from "@studio-freight/react-lenis";
 
-export default function ProjectImageCanvas({ cover, isInView }) {
+export default function ProjectImageCanvas({ cover, isInView, isClicked }) {
   const planRef = useRef(null);
   const shaderRef = useRef(null);
 
@@ -69,10 +69,11 @@ export default function ProjectImageCanvas({ cover, isInView }) {
 
   useEffect(() => {
     isInView ? showCard() : hideCard();
-  }, [isInView]);
+    isClicked && handleClick();
+  }, [isInView, isClicked]);
 
   useFrame(() => {
-    if (shaderRef.current) {
+    if (shaderRef.current && !isClicked) {
       // Normalise pointer
       mouseTarget.x = gsap.utils.interpolate(mouseTarget.x, pointer.x, 0.1);
       mouseTarget.y = gsap.utils.interpolate(mouseTarget.y, pointer.y, 0.1);
@@ -86,7 +87,7 @@ export default function ProjectImageCanvas({ cover, isInView }) {
   const handlePointerEnter = contextSafe(() => {
     tlLeave?.kill();
     tlForceIntro = new gsap.timeline();
-    if (shaderRef.current) {
+    if (shaderRef.current && !isClicked) {
       tlForceIntro.to(
         shaderRef.current.uniforms.uIntro,
         { value: 1, duration: 1, ease: "expo.out" },
@@ -107,7 +108,7 @@ export default function ProjectImageCanvas({ cover, isInView }) {
   const handlePointerLeave = contextSafe(() => {
     tlForceIntro?.kill();
     tlLeave = new gsap.timeline();
-    if (shaderRef.current) {
+    if (shaderRef.current && !isClicked) {
       tlLeave.to(
         shaderRef.current.uniforms.uIntro,
         { value: 0, duration: 1.8, ease: "expo.out" },
@@ -118,6 +119,27 @@ export default function ProjectImageCanvas({ cover, isInView }) {
         {
           value: 0,
           duration: 1.8,
+          ease: "expo.out",
+        },
+        0
+      );
+    }
+  });
+
+  const handleClick = contextSafe(() => {
+    tlForceIntro?.kill();
+    tlLeave = new gsap.timeline();
+    if (shaderRef.current) {
+      tlLeave.to(
+        shaderRef.current.uniforms.uIntro,
+        { value: 0, duration: 1, ease: "expo.out" },
+        0
+      );
+      tlLeave.to(
+        shaderRef.current.uniforms.uBulge,
+        {
+          value: 0,
+          duration: 1,
           ease: "expo.out",
         },
         0

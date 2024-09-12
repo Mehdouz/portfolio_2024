@@ -5,18 +5,17 @@ import { TransitionContext } from "@/components/TransitionContext";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import gsap from "gsap";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { OrthographicCamera } from "@react-three/drei";
 import WorkImageCanvas from "@/components/WorkImageCanvas.jsx";
 import ProjectSingleImageCanvas from "@/components/ProjectSingleImageCanvas.jsx";
 import { projects } from "../../data/data";
 import { WorkContext } from "@/components/WorkContext";
-import VisitWebsite from "@/components/VisitWebsite";
 import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation";
-import { useLenis } from "@studio-freight/react-lenis";
 import Link from "next/link";
-import SplitType from "split-type";
+import useIsomorphicLayoutEffect from "@/hooks/useIsomorphicLayoutEffect";
+import Image from "next/image";
+import AnimatedCursor from "@/hooks/useCursor";
 
 const humane = localFont({
   src: "../../public/fonts/humaneBold.woff2",
@@ -68,24 +67,33 @@ export const getStaticProps = async ({ params }) => {
 
 export default function Work({ activeWork, nextWork }) {
   const { timeline } = useContext(TransitionContext);
-  const { actualCover, nextCover, setActualWork, setNextWork, setIsLoading } =
-    useContext(WorkContext);
+  const {
+    actualCover,
+    isFirstLoad,
+    setIsFirstLoad,
+    setActualWork,
+    setNextWork,
+    setIsLoading,
+  } = useContext(WorkContext);
   const coverRef = useRef();
   const rootRef = useRef();
   const titleRef = useRef();
   const worksRef = useRef([]);
   const nextWorkRef = useRef();
+  const backHomeRef = useRef();
+  const contactRef = useRef();
+
+  const nextWorkImageRef = useRef();
+
   worksRef.current = [];
 
   const router = useRouter();
 
   const title = projects?.[`${activeWork}`]?.title;
 
-  // useLenis(({ dimensions, targetScroll }) => {
-  //   if (dimensions?.scrollHeight <= dimensions?.height + targetScroll) {
-  //     router.push(nextWork);
-  //   }
-  // });
+  useIsomorphicLayoutEffect(() => {
+    isFirstLoad && window.scrollTo(0, 0);
+  });
 
   useEffect(() => {
     setActualWork(activeWork);
@@ -99,6 +107,7 @@ export default function Work({ activeWork, nextWork }) {
 
   function loadNextCover() {
     setActualWork(nextWork);
+    setIsFirstLoad(false);
     ScrollTrigger.refresh();
   }
 
@@ -116,47 +125,26 @@ export default function Work({ activeWork, nextWork }) {
       const nextProjectAnimation = gsap.timeline({
         scrollTrigger: {
           trigger: nextWorkRef.current,
-          start: "top top",
-          end: "bottom+=91px top",
+          start: "top+=40% top",
+          end: "bottom top",
           toggleActions: "play pause resume reverse",
           scrub: true,
           onLeave: redirectWithoutTimeline,
-          once: true,
-          markers: true,
           onEnter: loadNextCover,
+          onEnterBack: loadNextCover,
           onLeaveBack: reloadActualCover,
         },
       });
 
       nextProjectAnimation.fromTo(
-        nextWorkRef.current,
-        { scale: 0.8 },
+        nextWorkImageRef.current,
+        { scale: 0.9 },
         {
           scale: 1,
         }
       );
 
-      // Entry Animation
-      // gsap.fromTo(
-      //   coverRef.current,
-      //   { opacity: 0.99 },
-      //   {
-      //     opacity: 1,
-      //     duration: 0.1,
-      //     ease: "power3.out",
-      //   }
-      // );
-
-      gsap.fromTo(
-        titleRef.current,
-        { opacity: 0 },
-        {
-          opacity: 1,
-          duration: 0.7,
-          ease: "power3.out",
-          stagger: 0.1,
-        }
-      );
+      nextProjectAnimation.to(".bg-testou", { opacity: 0.3 }, "=");
 
       // First scroll animation
       const firstScrolAnimation = gsap.timeline({
@@ -170,19 +158,87 @@ export default function Work({ activeWork, nextWork }) {
         },
       });
 
-      gsap.set(titleRef.current, { x: "-50%", y: "-50%" });
+      gsap.set(titleRef.current, { xPercent: -50, yPercent: -50 });
 
       // Entry animation
-
       firstScrolAnimation.to(titleRef.current, {
         scale: 0.62,
       });
 
-      firstScrolAnimation.fromTo(
+      firstScrolAnimation.to(
         coverRef.current,
-        { scale: 1 },
         {
           scale: 0.9,
+        },
+        "="
+      );
+
+      // Entry Animation
+      gsap.set(titleRef.current, {
+        opacity: 0,
+      });
+      gsap.to(titleRef.current, {
+        opacity: 1,
+        duration: 0.7,
+        ease: "expo.out",
+      });
+
+      // Animation teh menu sides
+      const sideMenu = gsap.timeline({
+        scrollTrigger: {
+          trigger: rootRef.current,
+          start: "bottom+=20px bottom",
+          end: "+=300px",
+          toggleActions: "play pause resume reverse",
+          autoRound: false,
+          scrub: true,
+        },
+      });
+
+      gsap.set(backHomeRef.current, {
+        letterSpacing: 5,
+        opacity: 0,
+        display: "none",
+      });
+      gsap.set(contactRef.current, {
+        letterSpacing: 5,
+        opacity: 0,
+        display: "none",
+      });
+
+      sideMenu.to(
+        backHomeRef.current,
+        {
+          display: "block",
+          opacity: 1,
+        },
+        "="
+      );
+
+      sideMenu.to(
+        contactRef.current,
+
+        {
+          display: "block",
+          opacity: 1,
+        },
+        "="
+      );
+
+      sideMenu.to(
+        backHomeRef.current,
+        {
+          letterSpacing: 10,
+          autoRound: false,
+        },
+        "="
+      );
+
+      sideMenu.to(
+        contactRef.current,
+        {
+          letterSpacing: 10,
+          autoRound: false,
         },
         "="
       );
@@ -224,19 +280,6 @@ export default function Work({ activeWork, nextWork }) {
         },
         0
       );
-
-      // Image teh le jetpro animation
-      // timeline.add(
-      //   gsap.fromTo(
-      //     nextWorkRef.current,
-      //     { scale: 0.999 },
-      //     {
-      //       scale: 1,
-      //       duration: 0.1,
-      //     }
-      //   ),
-      //   0
-      // );
     },
     {
       dependencies: [activeWork, title],
@@ -274,7 +317,57 @@ export default function Work({ activeWork, nextWork }) {
     <div
       className={`${fugaz.variable} ${ibm_flex_mono.variable} ${humane.variable} ${roobert.variable} relative`}
     >
-      <div ref={rootRef} className="relative">
+      <AnimatedCursor
+        innerSize={0}
+        outerSize={15}
+        outerAlpha={1}
+        outerScale={8}
+        hasBlendMode={true}
+        outerStyle={{
+          background: "#FFF",
+          mixBlendMode: "exclusion",
+        }}
+        innerStyle={{
+          whiteSpace: "nowrap",
+        }}
+        clickables={[
+          "a",
+          "button",
+          ".link",
+        ]}
+        trailingSpeed={10}
+        mouseText="Visit Website"
+        textClass="font-ibm"
+      />
+      {/* <div className="bg-testou w-full h-full fixed top-0 left-0 bg-pink-700 block opacity-0 z-20"></div> */}
+      <div className="w-[100vh] flex justify-center rotate-90 origin-top-left p-6 font-roobert uppercase fixed top-0 left-[80px] z-40">
+        {router?.pathname !== "/" && (
+          <Link
+            ref={backHomeRef}
+            href="/"
+            scroll={false}
+            className="relative text-[12px] tracking-widest text-black group w-max"
+          >
+            Back to projects
+            <span className="absolute top-[9px] left-[48%] w-0 transition-all h-[1px] bg-black group-hover:w-[53%]"></span>
+            <span className="absolute top-[9px] right-[52%] w-0 transition-all h-[1px] bg-black group-hover:w-[53%]"></span>
+          </Link>
+        )}
+      </div>
+      <div className="w-[100vh] flex justify-center -rotate-90 origin-top-right p-6 font-roobert uppercase fixed top-0 right-[80px] z-40">
+        {router?.pathname !== "/" && (
+          <a
+            ref={contactRef}
+            href="mailto:mehdouz@gmail.com"
+            className="relative text-[12px] tracking-widest text-black group w-max"
+          >
+            Contact
+            <span className="absolute top-[9px] left-[46%] w-0 transition-all h-[1px] bg-black group-hover:w-[53%]"></span>
+            <span className="absolute top-[9px] right-[54%] w-0 transition-all h-[1px] bg-black group-hover:w-[53%]"></span>
+          </a>
+        )}
+      </div>
+      <div ref={rootRef} className="relative block">
         <h1
           ref={titleRef}
           className="absolute top-2/4 left-2/4 font-humane mix-blend-exclusion text-[22rem] leading-none uppercase truncate z-30"
@@ -283,8 +376,20 @@ export default function Work({ activeWork, nextWork }) {
         </h1>
         <div
           ref={coverRef}
-          className="cover relative h-screen w-screen text-8xl z-10 overflow-hidden"
+          className="cover relative h-screen w-screen max-w-full text-8xl z-10 overflow-hidden"
         >
+          <div className="w-screen h-screen max-w-full relative z-50 block">
+            <div className="w-full h-full overflow-hidden">
+              <Image
+                className="w-full h-full object-cover"
+                width={2100}
+                height={1400}
+                src={projects[activeWork]?.cover}
+                alt={projects[activeWork]?.title}
+                priority
+              />
+            </div>
+          </div>
           <Canvas dpr={1} resize={{ scroll: false }}>
             <WorkImageCanvas cover={actualCover} imageAspect={1400 / 2100} />
             <OrthographicCamera
@@ -300,7 +405,7 @@ export default function Work({ activeWork, nextWork }) {
           </Canvas>
         </div>
       </div>
-      <div className="relative flex justify-between px-24 font-ibm uppercase text-grey-50 text-[11px] tracking-widest">
+      <div className="relative flex justify-center gap-[15%] px-24 font-ibm uppercase text-grey-50 text-[11px] tracking-widest">
         <div>
           <h2 className="clientItem pb-1 font-semibold antialiased">
             Client :
@@ -317,7 +422,7 @@ export default function Work({ activeWork, nextWork }) {
             ))}
           </ul>
         </div>
-        <div className="text-right">
+        <div>
           <h2 className="technoItem pb-1 font-semibold antialiased">
             Technologies :
           </h2>
@@ -332,7 +437,7 @@ export default function Work({ activeWork, nextWork }) {
           </ul>
         </div>
       </div>
-      {/* <div className="relative container mx-auto px-52 z-30">
+      <div className="relative container mx-auto px-52 z-30">
         {projects?.[`${activeWork}`]?.images?.desktop.map((image, index) => {
           return (
             <div
@@ -360,7 +465,7 @@ export default function Work({ activeWork, nextWork }) {
             </div>
           );
         })}
-      </div> */}
+      </div>
       <div className="relative container mx-auto flex justify-between px-52 z-30">
         {projects?.[`${activeWork}`]?.images?.mobile.map((image, index) => {
           return (
@@ -389,19 +494,20 @@ export default function Work({ activeWork, nextWork }) {
           );
         })}
       </div>
-      <div ref={nextWorkRef} className="w-screen h-screen relative z-10 block">
+      <div
+        ref={nextWorkRef}
+        className="w-screen h-screen max-w-full relative z-50 block"
+      >
         <div className="w-full h-full overflow-hidden">
           <img
+            ref={nextWorkImageRef}
             className="w-full h-full object-cover"
-            width={1540}
-            height={1080}
+            width={2100}
+            height={1400}
             src={projects[nextWork]?.cover}
             alt={projects[nextWork]?.title}
           />
         </div>
-      </div>
-      <div onClick={() => router.push(nextWork)}>
-        <VisitWebsite />
       </div>
     </div>
   );

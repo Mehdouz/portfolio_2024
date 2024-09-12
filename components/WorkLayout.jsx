@@ -18,6 +18,7 @@ export default function WorkLayout({ children }) {
   } = useContext(WorkContext);
   const el = useRef();
 
+
   useGSAP(() => {
     if (actualWork) {
       const actualCoverTexture = () =>

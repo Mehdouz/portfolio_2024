@@ -9,22 +9,55 @@ import SplitType from "split-type";
 import { TransitionContext } from "./TransitionContext";
 import Link from "next/link";
 import useIsomorphicLayoutEffect from "@/hooks/useIsomorphicLayoutEffect";
+import { Flip } from "gsap/dist/Flip";
+import { WorkContext } from "./WorkContext";
 
 export default function ProjectHome({ project, index }) {
   const [isInView, setIsInView] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
   const rootRef = useRef(null);
   const imageRef = useRef(null);
   const projectListRef = useRef();
   const categoryRef = useRef(null);
   const titleRef = useRef(null);
+  const canvasRef = useRef(null);
+
+  const { setActualWork } = useContext(WorkContext);
 
   const { timeline } = useContext(TransitionContext);
+
+  const handleProjectClick = () => {
+    setIsClicked(true);
+    setActualWork(project?.title);
+
+    const state = Flip.getState(imageRef.current);
+
+    gsap.set(imageRef.current, {
+      position: "fixed",
+      width: "100%",
+      height: "100%",
+      maxWidth: "none",
+      maxHeight: "none",
+      left: 0,
+      top: 0,
+      zIndex: 100,
+    });
+
+
+      Flip.from(state, {
+        simple: true,
+        duration: 1,
+        ease: "expo.out",
+      })
+
+  };
 
   useIsomorphicLayoutEffect(() => {
     const titleText = new SplitType(titleRef.current, { types: "chars" });
     const titleChars = titleText.chars;
 
     gsap.registerPlugin(ScrollTrigger);
+    gsap.registerPlugin(Flip);
 
     const textRevealAnimation = gsap.timeline({
       scrollTrigger: {
@@ -44,17 +77,8 @@ export default function ProjectHome({ project, index }) {
       },
     });
 
-    const scrollScrub = gsap.timeline({
-      scrollTrigger: {
-        trigger: rootRef.current,
-        start: "top bottom",
-        end: "bottom top",
-        scrub: true,
-      },
-    });
-
     let ctx = gsap.context(() => {
-      revealAnimation.from(imageRef.current, {
+      revealAnimation.from(canvasRef.current, {
         y: 400,
         duration: 0.7,
         ease: "power3.out",
@@ -100,18 +124,6 @@ export default function ProjectHome({ project, index }) {
     }, rootRef);
 
     timeline.add(
-      gsap.fromTo(
-        imageRef.current,
-        { x: 0 },
-        {
-          x: "+=100%",
-          duration: 0.7,
-          ease: "expo.in",
-        }
-      ),
-      0
-    );
-    timeline.add(
       gsap.to(titleChars, {
         y: 300,
         duration: 0.7,
@@ -126,9 +138,16 @@ export default function ProjectHome({ project, index }) {
   return (
     <div
       ref={rootRef}
-      className="container mx-auto px-32 mb-44 cursor-pointer aspect-video "
+      className="container mx-auto px-32 mb-44 aspect-video"
     >
-      <Link href={`work/${project?.title}`} scroll={false}>
+      {isClicked && (
+        <div className="block fixed top-0 left-0 w-full h-full pointer-events-none z-[100]" />
+      )}
+      <Link
+        href={`work/${project?.title}`}
+        scroll={false}
+        onClick={handleProjectClick}
+      >
         <div className="relative text-white pointer-events-none">
           <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
             <ul
@@ -149,7 +168,7 @@ export default function ProjectHome({ project, index }) {
               ref={categoryRef}
               className="absolute bottom-8 right-8 font-roobert text-5xl z-20"
             >
-              / Insurance
+              {project?.sector}
             </p>
             <div
               ref={titleRef}
@@ -158,14 +177,16 @@ export default function ProjectHome({ project, index }) {
               {project.title}
             </div>
           </div>
-          <div className="aspect-video">
-            <Canvas
-              ref={imageRef}
-              className="aspect-video rounded-lg"
-              dpr={1}
-              resize={{ scroll: false }}
-            >
-              <ProjectImageCanvas cover={project.cover} isInView={isInView} />
+          <div
+            ref={imageRef}
+            className="cover relative text-8xl z-10 aspect-video rounded-lg overflow-hidden"
+          >
+            <Canvas ref={canvasRef} className="max-w-none max-h-none" dpr={1} resize={{ scroll: false }}>
+              <ProjectImageCanvas
+                cover={project.cover}
+                isInView={isInView}
+                isClicked={isClicked}
+              />
               <OrthographicCamera
                 manual
                 left={-1}

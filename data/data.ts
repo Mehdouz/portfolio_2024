@@ -4,12 +4,13 @@ export const projects = {
     cover: "/projets/angie/angie.jpg",
     technologies: ["REACT", "WORDPRESS", "HTML5", "JAVASCRIPT"],
     role: ["intégration", "animations"],
+    sector: "/ Agency",
     images: {
       desktop: [
         {
           width: 1270,
           height: 2776,
-          containerHeight: 2350,
+          containerHeight: 1670,
           url: "/projets/angie/angie_01.jpg",
         },
         {
@@ -46,6 +47,7 @@ export const projects = {
     cover: "/projets/axa/axa.jpg",
     technologies: ["REACT", "NEXT.JS", "FRAMER-MOTION", "HTML5", "JAVASCRIPT"],
     role: ["intégration", "animations"],
+    sector: "/ Insurance",
     images: {
       desktop: [
         {
@@ -88,6 +90,7 @@ export const projects = {
     cover: "/projets/guerlain/guerlain.jpg",
     technologies: ["HTML5", "WORDPRESS", "JAVASCRIPT"],
     role: ["intégration", "animations"],
+    sector: "/ Cosmetics",
     images: {
       desktop: [
         {

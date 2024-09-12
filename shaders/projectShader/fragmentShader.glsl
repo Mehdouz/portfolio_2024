@@ -10,7 +10,7 @@ uniform float uTime;
 
 varying vec2 vUv;
 
-const float radius = 0.95;
+const float radius = 1.2;
 const float strength = 1.1;
 
 vec2 bulge(vec2 uv, vec2 center) {

@@ -1,0 +1,1 @@
+- optimiser loading des textures dans le workContext, les charger puis afficher la page

@@ -7,6 +7,7 @@ import gsap from "gsap";
 import Projects from "@/components/Projects";
 import { TransitionContext } from "@/components/TransitionContext";
 import { useGSAP } from "@gsap/react";
+import AnimatedCursor from "@/hooks/useCursor";
 
 const humane = localFont({
   src: "../public/fonts/humaneBold.woff2",
@@ -72,6 +73,28 @@ export default function Home({ works }) {
       ref={rootRef}
       className={`px-20 ${fugaz.variable} ${ibm_flex_mono.variable} ${humane.variable} ${roobert.variable} ${avenir.variable}`}
     >
+      <AnimatedCursor
+        innerSize={0}
+        outerSize={15}
+        outerAlpha={1}
+        outerScale={8}
+        hasBlendMode={true}
+        outerStyle={{
+          background: "#FFF",
+          mixBlendMode: "exclusion",
+        }}
+        innerStyle={{
+          whiteSpace: "nowrap",
+        }}
+        clickables={[
+          "a",
+          "button",
+          ".link",
+        ]}
+        trailingSpeed={10}
+        mouseText="lol"
+        textClass="font-ibm"
+      />
       <div className="relative">
         <div className="h-screen w-full flex items-center justify-end">
           <h1
