@@ -10,9 +10,9 @@ const roobert = localFont({
   variable: "--font-roobert",
 });
 
-export default function Layout({ children }) {
+export default function Layout({ className, children }) {
   return (
-    <div className={` ${humane.variable} ${roobert.variable} relative`}>
+    <div className={` ${humane.variable} ${roobert.variable} relative ${className}`}>
       <main>{children}</main>
     </div>
   );

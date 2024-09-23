@@ -87,13 +87,11 @@ export default function Home({ works }) {
           whiteSpace: "nowrap",
         }}
         clickables={[
-          "a",
-          "button",
-          ".link",
+          ".mouseLink",
         ]}
         trailingSpeed={10}
-        mouseText="lol"
-        textClass="font-ibm"
+        mouseText="View Project"
+        textClass="font-ibm text-sm"
       />
       <div className="relative">
         <div className="h-screen w-full flex items-center justify-end">

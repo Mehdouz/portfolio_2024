@@ -66,7 +66,6 @@ export const getStaticProps = async ({ params }) => {
 };
 
 export default function Work({ activeWork, nextWork }) {
-  const { timeline } = useContext(TransitionContext);
   const {
     actualCover,
     isFirstLoad,
@@ -74,6 +73,8 @@ export default function Work({ activeWork, nextWork }) {
     setActualWork,
     setNextWork,
     setIsLoading,
+    cameFromHome,
+    setCameFromHome,
   } = useContext(WorkContext);
   const coverRef = useRef();
   const rootRef = useRef();
@@ -82,6 +83,7 @@ export default function Work({ activeWork, nextWork }) {
   const nextWorkRef = useRef();
   const backHomeRef = useRef();
   const contactRef = useRef();
+  const overlayRef = useRef();
 
   const nextWorkImageRef = useRef();
 
@@ -93,6 +95,7 @@ export default function Work({ activeWork, nextWork }) {
 
   useIsomorphicLayoutEffect(() => {
     isFirstLoad && window.scrollTo(0, 0);
+    setIsFirstLoad(false);
   });
 
   useEffect(() => {
@@ -102,12 +105,12 @@ export default function Work({ activeWork, nextWork }) {
 
   function redirectWithoutTimeline() {
     setIsLoading(true);
+    setCameFromHome(false);
     router.push(nextWork);
   }
 
   function loadNextCover() {
     setActualWork(nextWork);
-    setIsFirstLoad(false);
     ScrollTrigger.refresh();
   }
 
@@ -120,6 +123,31 @@ export default function Work({ activeWork, nextWork }) {
   useGSAP(
     () => {
       gsap.registerPlugin(ScrollTrigger);
+
+      cameFromHome &&
+        gsap.fromTo(
+          overlayRef.current,
+          { y: 0 },
+          {
+            display: "block",
+            y: "-100%",
+            delay: 0.2,
+            duration: 0.3,
+            ease: "expo.inOut",
+          }
+        );
+
+      // Entry Animation
+      gsap.set(titleRef.current, {
+        opacity: 0,
+      });
+
+      gsap.to(titleRef.current, {
+        opacity: 1,
+        delay: 0.5,
+        duration: 0.7,
+        ease: "expo.out",
+      });
 
       // Next project animation
       const nextProjectAnimation = gsap.timeline({
@@ -143,8 +171,6 @@ export default function Work({ activeWork, nextWork }) {
           scale: 1,
         }
       );
-
-      nextProjectAnimation.to(".bg-testou", { opacity: 0.3 }, "=");
 
       // First scroll animation
       const firstScrolAnimation = gsap.timeline({
@@ -172,16 +198,6 @@ export default function Work({ activeWork, nextWork }) {
         },
         "="
       );
-
-      // Entry Animation
-      gsap.set(titleRef.current, {
-        opacity: 0,
-      });
-      gsap.to(titleRef.current, {
-        opacity: 1,
-        duration: 0.7,
-        ease: "expo.out",
-      });
 
       // Animation teh menu sides
       const sideMenu = gsap.timeline({
@@ -317,6 +333,12 @@ export default function Work({ activeWork, nextWork }) {
     <div
       className={`${fugaz.variable} ${ibm_flex_mono.variable} ${humane.variable} ${roobert.variable} relative`}
     >
+      {cameFromHome && (
+        <div
+          ref={overlayRef}
+          className="none fixed top-0 left-0 w-full h-full pointer-events-none bg-zinc-950 z-[100]"
+        />
+      )}
       <AnimatedCursor
         innerSize={0}
         outerSize={15}
@@ -330,23 +352,19 @@ export default function Work({ activeWork, nextWork }) {
         innerStyle={{
           whiteSpace: "nowrap",
         }}
-        clickables={[
-          "a",
-          "button",
-          ".link",
-        ]}
+        clickables={[".mouseLink"]}
         trailingSpeed={10}
-        mouseText="Visit Website"
-        textClass="font-ibm"
+        mouseText={`Visit Website`}
+        textClass="font-ibm text-[13px]"
+        showSystemCursor={false}
       />
-      {/* <div className="bg-testou w-full h-full fixed top-0 left-0 bg-pink-700 block opacity-0 z-20"></div> */}
       <div className="w-[100vh] flex justify-center rotate-90 origin-top-left p-6 font-roobert uppercase fixed top-0 left-[80px] z-40">
         {router?.pathname !== "/" && (
           <Link
             ref={backHomeRef}
             href="/"
             scroll={false}
-            className="relative text-[12px] tracking-widest text-black group w-max"
+            className="relative text-[12px] tracking-widest text-black group w-max cursor-none"
           >
             Back to projects
             <span className="absolute top-[9px] left-[48%] w-0 transition-all h-[1px] bg-black group-hover:w-[53%]"></span>
@@ -359,7 +377,7 @@ export default function Work({ activeWork, nextWork }) {
           <a
             ref={contactRef}
             href="mailto:mehdouz@gmail.com"
-            className="relative text-[12px] tracking-widest text-black group w-max"
+            className="relative text-[12px] tracking-widest text-black group w-max cursor-none"
           >
             Contact
             <span className="absolute top-[9px] left-[46%] w-0 transition-all h-[1px] bg-black group-hover:w-[53%]"></span>
@@ -378,18 +396,6 @@ export default function Work({ activeWork, nextWork }) {
           ref={coverRef}
           className="cover relative h-screen w-screen max-w-full text-8xl z-10 overflow-hidden"
         >
-          <div className="w-screen h-screen max-w-full relative z-50 block">
-            <div className="w-full h-full overflow-hidden">
-              <Image
-                className="w-full h-full object-cover"
-                width={2100}
-                height={1400}
-                src={projects[activeWork]?.cover}
-                alt={projects[activeWork]?.title}
-                priority
-              />
-            </div>
-          </div>
           <Canvas dpr={1} resize={{ scroll: false }}>
             <WorkImageCanvas cover={actualCover} imageAspect={1400 / 2100} />
             <OrthographicCamera
@@ -446,22 +452,24 @@ export default function Work({ activeWork, nextWork }) {
               className="w-full mb-12"
               style={{ height: `${image.containerHeight}px` }}
             >
-              <Canvas dpr={1} resize={{ scroll: false }}>
-                <ProjectSingleImageCanvas
-                  cover={image.url}
-                  imageAspect={image.height / image.width}
-                />
-                <OrthographicCamera
-                  manual
-                  left={-1}
-                  right={1}
-                  top={1}
-                  bottom={-1}
-                  near={0}
-                  far={1}
-                  makeDefault
-                />
-              </Canvas>
+              <Link href="www.google.com" className="mouseLink" target="_blank">
+                <Canvas dpr={1} resize={{ scroll: false }}>
+                  <ProjectSingleImageCanvas
+                    cover={image.url}
+                    imageAspect={image.height / image.width}
+                  />
+                  <OrthographicCamera
+                    manual
+                    left={-1}
+                    right={1}
+                    top={1}
+                    bottom={-1}
+                    near={0}
+                    far={1}
+                    makeDefault
+                  />
+                </Canvas>
+              </Link>
             </div>
           );
         })}
@@ -499,7 +507,7 @@ export default function Work({ activeWork, nextWork }) {
         className="w-screen h-screen max-w-full relative z-50 block"
       >
         <div className="w-full h-full overflow-hidden">
-          <img
+          <Image
             ref={nextWorkImageRef}
             className="w-full h-full object-cover"
             width={2100}

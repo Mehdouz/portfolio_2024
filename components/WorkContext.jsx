@@ -9,7 +9,7 @@ const WorkProvider = ({ children }) => {
   const [nextCover, setNextCover] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
-
+  const [cameFromHome, setCameFromHome] = useState(false);
   return (
     <WorkContext.Provider
       value={{
@@ -25,6 +25,8 @@ const WorkProvider = ({ children }) => {
         setIsLoading,
         isFirstLoad,
         setIsFirstLoad,
+        cameFromHome,
+        setCameFromHome,
       }}
     >
       {children}
