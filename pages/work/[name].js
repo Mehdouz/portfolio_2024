@@ -1,14 +1,12 @@
 import { Fugaz_One, IBM_Plex_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { Canvas } from "@react-three/fiber";
-import { TransitionContext } from "@/components/TransitionContext";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import gsap from "gsap";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { OrthographicCamera } from "@react-three/drei";
 import WorkImageCanvas from "@/components/WorkImageCanvas.jsx";
-import ProjectSingleImageCanvas from "@/components/ProjectSingleImageCanvas.jsx";
 import { projects } from "../../data/data";
 import { WorkContext } from "@/components/WorkContext";
 import { useRouter } from "next/navigation";
@@ -16,6 +14,7 @@ import Link from "next/link";
 import useIsomorphicLayoutEffect from "@/hooks/useIsomorphicLayoutEffect";
 import Image from "next/image";
 import AnimatedCursor from "@/hooks/useCursor";
+import ProjectImages from "@/components/ProjectImages";
 
 const humane = localFont({
   src: "../../public/fonts/humaneBold.woff2",
@@ -65,6 +64,7 @@ export const getStaticProps = async ({ params }) => {
   return { props: { activeWork, nextWork } };
 };
 
+
 export default function Work({ activeWork, nextWork }) {
   const {
     actualCover,
@@ -79,15 +79,12 @@ export default function Work({ activeWork, nextWork }) {
   const coverRef = useRef();
   const rootRef = useRef();
   const titleRef = useRef();
-  const worksRef = useRef([]);
   const nextWorkRef = useRef();
   const backHomeRef = useRef();
   const contactRef = useRef();
   const overlayRef = useRef();
-
   const nextWorkImageRef = useRef();
 
-  worksRef.current = [];
 
   const router = useRouter();
 
@@ -144,7 +141,7 @@ export default function Work({ activeWork, nextWork }) {
 
       gsap.to(titleRef.current, {
         opacity: 1,
-        delay: 0.5,
+        delay: cameFromHome ? 0.5 : 0,
         duration: 0.7,
         ease: "expo.out",
       });
@@ -262,7 +259,7 @@ export default function Work({ activeWork, nextWork }) {
       // Informations projet animations
       const infosAnimation = gsap.timeline({
         scrollTrigger: {
-          trigger: worksRef.current,
+          trigger: rootRef.current,
           start: "top+=100px bottom",
           toggleActions: "play pause resume reverse",
         },
@@ -303,31 +300,6 @@ export default function Work({ activeWork, nextWork }) {
     }
   );
 
-  // Entry animation of project's images pres
-  useGSAP(() => {
-    worksRef.current.map((item, index) => {
-      let tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: item,
-          start: "top bottom",
-          end: "top+=30% bottom",
-          toggleActions: "play pause resume reverse",
-          scrub: true,
-        },
-      });
-      tl.set(item.querySelectorAll("div"), { y: 30, scale: 0.9 });
-      tl.to(item.querySelectorAll("div"), {
-        y: 0,
-        scale: 1,
-      });
-    });
-  }, [worksRef]);
-
-  const addToRefs = (item) => {
-    if (item) {
-      worksRef.current.push(item);
-    }
-  };
 
   return (
     <div
@@ -358,7 +330,7 @@ export default function Work({ activeWork, nextWork }) {
         textClass="font-ibm text-[13px]"
         showSystemCursor={false}
       />
-      <div className="w-[100vh] flex justify-center rotate-90 origin-top-left p-6 font-roobert uppercase fixed top-0 left-[80px] z-40">
+      <div className="w-[100vh] flex justify-center rotate-90 origin-top-left p-6 font-roobert uppercase fixed top-0 left-[55px] lg:left-[80px] z-40">
         {router?.pathname !== "/" && (
           <Link
             ref={backHomeRef}
@@ -372,7 +344,7 @@ export default function Work({ activeWork, nextWork }) {
           </Link>
         )}
       </div>
-      <div className="w-[100vh] flex justify-center -rotate-90 origin-top-right p-6 font-roobert uppercase fixed top-0 right-[80px] z-40">
+      <div className="w-[100vh] flex justify-center -rotate-90 origin-top-right p-6 font-roobert uppercase fixed top-0 right-[55px] lg:right-[80px] z-40">
         {router?.pathname !== "/" && (
           <a
             ref={contactRef}
@@ -388,7 +360,7 @@ export default function Work({ activeWork, nextWork }) {
       <div ref={rootRef} className="relative block">
         <h1
           ref={titleRef}
-          className="absolute top-2/4 left-2/4 font-humane mix-blend-exclusion text-[22rem] leading-none uppercase truncate z-30"
+          className="absolute top-2/4 left-2/4 font-humane mix-blend-exclusion text-[12rem] md:text-[18rem] lg:text-[22rem] leading-none uppercase truncate z-30"
         >
           {projects?.[`${activeWork}`]?.title}
         </h1>
@@ -443,64 +415,11 @@ export default function Work({ activeWork, nextWork }) {
           </ul>
         </div>
       </div>
-      <div className="relative container mx-auto px-52 z-30">
-        {projects?.[`${activeWork}`]?.images?.desktop.map((image, index) => {
-          return (
-            <div
-              key={index}
-              ref={addToRefs}
-              className="w-full mb-12"
-              style={{ height: `${image.containerHeight}px` }}
-            >
-              <Link href="www.google.com" className="mouseLink" target="_blank">
-                <Canvas dpr={1} resize={{ scroll: false }}>
-                  <ProjectSingleImageCanvas
-                    cover={image.url}
-                    imageAspect={image.height / image.width}
-                  />
-                  <OrthographicCamera
-                    manual
-                    left={-1}
-                    right={1}
-                    top={1}
-                    bottom={-1}
-                    near={0}
-                    far={1}
-                    makeDefault
-                  />
-                </Canvas>
-              </Link>
-            </div>
-          );
-        })}
+      <div className="relative container mx-auto px-12 md:px-24 lg:px-40 xl:px-52 z-30">
+        <ProjectImages images={projects?.[`${activeWork}`]?.images?.desktop} type="desktop" projectName={activeWork}/>
       </div>
-      <div className="relative container mx-auto flex justify-between px-52 z-30">
-        {projects?.[`${activeWork}`]?.images?.mobile.map((image, index) => {
-          return (
-            <div
-              key={index}
-              className="grow"
-              style={{ height: `${image.containerHeight}px` }}
-            >
-              <Canvas dpr={1} resize={{ scroll: false }}>
-                <ProjectSingleImageCanvas
-                  cover={image.url}
-                  imageAspect={image.height / image.width}
-                />
-                <OrthographicCamera
-                  manual
-                  left={-1}
-                  right={1}
-                  top={1}
-                  bottom={-1}
-                  near={0}
-                  far={1}
-                  makeDefault
-                />
-              </Canvas>
-            </div>
-          );
-        })}
+      <div className="relative container mx-auto flex w-full gap-2 flex-col lg:flex-row justify-between px-12 md:px-24 lg:px-40 xl:px-52 z-30">
+        <ProjectImages images={projects?.[`${activeWork}`]?.images?.mobile} type="mobile" projectName={activeWork} />
       </div>
       <div
         ref={nextWorkRef}

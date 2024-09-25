@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import customHeightsPlugin from './tailwind-plugin-custom-heights';
 
 const config: Config = {
   content: [
@@ -8,6 +9,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      aspectRatio: {
+        "8/5": "8 / 5",
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
@@ -16,8 +20,10 @@ const config: Config = {
         axa: "/projets/axa/axa.jpg",
         guerlain: "/projets/guerlain/guerlain.jpg",
       },
-      aspectRatio: {
-        "8/5": "8 / 5",
+      colors: {
+        grey: {
+          50: "#322F2E",
+        },
       },
       fontFamily: {
         fugaz: ["var(--font-fugaz)"],
@@ -25,11 +31,6 @@ const config: Config = {
         humane: ["var(--font-humane)"],
         roobert: ["var(--font-roobert)"],
         avenir: ["var(--font-avenir)"],
-      },
-      colors: {
-        grey: {
-          50: "#322F2E",
-        },
       },
       letterSpacing: {
         widest: ".20em",
@@ -39,6 +40,11 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [customHeightsPlugin],
+  safelist: [
+    {
+      pattern: /^h-(.*)-(.*)-(.*)/,
+    },
+  ],
 };
 export default config;

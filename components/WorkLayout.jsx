@@ -18,7 +18,6 @@ export default function WorkLayout({ children }) {
   } = useContext(WorkContext);
   const el = useRef();
 
-
   useGSAP(() => {
     if (actualWork) {
       const actualCoverTexture = () =>
@@ -29,14 +28,15 @@ export default function WorkLayout({ children }) {
         : setActualCover(actualCoverTexture);
     }
 
-    setNextCover(() =>
-      new TextureLoader().load(projects?.[`${nextWork}`]?.cover)
-    );
+    if (nextWork && projects[nextWork]) {
+      setNextCover(() =>
+        new TextureLoader().load(projects[nextWork].cover)
+      );
+    }
 
     setIsLoading(false);
-
     setDisplayChildren(children);
-  }, [children, actualWork]);
+  }, [children, actualWork, nextWork]);
 
   return <div ref={el}>{displayChildren}</div>;
 }
