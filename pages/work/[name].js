@@ -7,6 +7,7 @@ import gsap from "gsap";
 import { useContext, useEffect, useRef } from "react";
 import { OrthographicCamera } from "@react-three/drei";
 import WorkImageCanvas from "@/components/WorkImageCanvas.jsx";
+import ProjectSingleImageCanvas from "@/components/ProjectSingleImageCanvas";
 import { projects } from "../../data/data";
 import { WorkContext } from "@/components/WorkContext";
 import { useRouter } from "next/navigation";
@@ -41,14 +42,14 @@ const ibm_flex_mono = IBM_Plex_Mono({
 
 export async function getStaticPaths() {
   const paths = Object.values(projects).map((project) => ({
-    params: { name: project.title },
+    params: { name: project.title.replace(/\s/g, "") },
   }));
 
   return { paths, fallback: false };
 }
 
 export const getStaticProps = async ({ params }) => {
-  const activeWork = params.name;
+  const activeWork = params.name.replace(/\s/g, "");
   let nextWork;
 
   const projectsArray = Object.keys(projects);
@@ -64,7 +65,6 @@ export const getStaticProps = async ({ params }) => {
   return { props: { activeWork, nextWork } };
 };
 
-
 export default function Work({ activeWork, nextWork }) {
   const {
     actualCover,
@@ -76,6 +76,7 @@ export default function Work({ activeWork, nextWork }) {
     cameFromHome,
     setCameFromHome,
   } = useContext(WorkContext);
+
   const coverRef = useRef();
   const rootRef = useRef();
   const titleRef = useRef();
@@ -84,7 +85,7 @@ export default function Work({ activeWork, nextWork }) {
   const contactRef = useRef();
   const overlayRef = useRef();
   const nextWorkImageRef = useRef();
-
+  const worksRef = useRef([]);
 
   const router = useRouter();
 
@@ -95,10 +96,29 @@ export default function Work({ activeWork, nextWork }) {
     setIsFirstLoad(false);
   });
 
+  useIsomorphicLayoutEffect(() => {
+    const scrollTop = () => {
+      window.scrollTo(0, 0);
+    };
+
+    const handleResize = () => {
+      ScrollTrigger.addEventListener("refresh", () => {
+        if (window.scrollY < nextWorkRef.current.offsetTop + 1) scrollTop();
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      ScrollTrigger.removeEventListener("refresh", scrollTop);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   useEffect(() => {
     setActualWork(activeWork);
     setNextWork(nextWork);
-  }, [activeWork, nextWork]);
+  }, [activeWork, nextWork, setActualWork, setNextWork]);
 
   function redirectWithoutTimeline() {
     setIsLoading(true);
@@ -161,13 +181,11 @@ export default function Work({ activeWork, nextWork }) {
         },
       });
 
-      nextProjectAnimation.fromTo(
-        nextWorkImageRef.current,
-        { scale: 0.9 },
-        {
-          scale: 1,
-        }
-      );
+      gsap.set(nextWorkImageRef.current, { scale: 0.9 });
+
+      nextProjectAnimation.to(nextWorkImageRef.current, {
+        scale: 1,
+      });
 
       // First scroll animation
       const firstScrolAnimation = gsap.timeline({
@@ -178,6 +196,7 @@ export default function Work({ activeWork, nextWork }) {
           toggleActions: "play pause resume reverse",
           scrub: 0.2,
           pin: true,
+          invalidateOnRefresh: true,
         },
       });
 
@@ -293,13 +312,35 @@ export default function Work({ activeWork, nextWork }) {
         },
         0
       );
+
+      worksRef.current.map((item) => {
+        let tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: item,
+            start: "top bottom",
+            end: "top+=30% bottom",
+            toggleActions: "play pause resume reverse",
+            scrub: true,
+          },
+        });
+        tl.set(item.querySelectorAll("div"), { y: 30, scale: 0.9 });
+        tl.to(item.querySelectorAll("div"), {
+          y: 0,
+          scale: 1,
+        });
+      });
     },
     {
-      dependencies: [activeWork, title],
+      dependencies: [activeWork, title, worksRef],
       revertOnUpdate: true,
     }
   );
 
+  const addToRefs = (item) => {
+    if (item && !worksRef.current.includes(item)) {
+      worksRef.current.push(item);
+    }
+  };
 
   return (
     <div
@@ -366,9 +407,13 @@ export default function Work({ activeWork, nextWork }) {
         </h1>
         <div
           ref={coverRef}
-          className="cover relative h-screen w-screen max-w-full text-8xl z-10 overflow-hidden"
+          className="cover relative h-screen w-screen max-w-full text-8xl z-10 overflow-hidden aspect-[1400/2100]"
         >
-          <Canvas dpr={1} resize={{ scroll: false }}>
+          <Canvas
+            dpr={1}
+            resize={{ scroll: false }}
+            style={{ width: "100%", height: "100%" }}
+          >
             <WorkImageCanvas cover={actualCover} imageAspect={1400 / 2100} />
             <OrthographicCamera
               manual
@@ -388,7 +433,7 @@ export default function Work({ activeWork, nextWork }) {
           <h2 className="clientItem pb-1 font-semibold antialiased">
             Client :
           </h2>
-          <p className="clientItem">{projects?.[`${activeWork}`]?.title}</p>
+          <p className="clientItem">{projects?.[`${activeWork}`]?.client}</p>
         </div>
         <div>
           <h2 className="roleItem pb-1 font-semibold antialiased">Rôle :</h2>
@@ -415,11 +460,113 @@ export default function Work({ activeWork, nextWork }) {
           </ul>
         </div>
       </div>
-      <div className="relative container mx-auto px-12 md:px-24 lg:px-40 xl:px-52 z-30">
-        <ProjectImages images={projects?.[`${activeWork}`]?.images?.desktop} type="desktop" projectName={activeWork}/>
+      <div className="relative container mx-auto px-12 md:px-24 lg:px-40 xl:px-52 xl:mt-12 z-30">
+        {projects?.[`${activeWork}`]?.images?.desktop.map((image, index) => {
+          const heightClass = `h-${activeWork}-desktop-${index + 1}`;
+          return (
+            <div
+              ref={addToRefs} // Add ref only for desktop
+              key={activeWork + index}
+              className={`w-full mb-12 ${heightClass}`}
+            >
+              {projects?.[`${activeWork}`]?.link ? (
+                <Link
+                  href={projects[`${activeWork}`].link}
+                  className="mouseLink"
+                  target="_blank"
+                >
+                  <Canvas dpr={1} resize={{ scroll: false }}>
+                    <ProjectSingleImageCanvas
+                      cover={image.url}
+                      imageAspect={image.width / image.height}
+                    />
+                    <OrthographicCamera
+                      manual
+                      left={-1}
+                      right={1}
+                      top={1}
+                      bottom={-1}
+                      near={0}
+                      far={1}
+                      makeDefault
+                    />
+                  </Canvas>
+                </Link>
+              ) : (
+                <Canvas dpr={1} resize={{ scroll: false }}>
+                  <ProjectSingleImageCanvas
+                    cover={image.url}
+                    imageAspect={image.height / image.width}
+                  />
+                  <OrthographicCamera
+                    manual
+                    left={-1}
+                    right={1}
+                    top={1}
+                    bottom={-1}
+                    near={0}
+                    far={1}
+                    makeDefault
+                  />
+                </Canvas>
+              )}
+            </div>
+          );
+        })}
       </div>
       <div className="relative container mx-auto flex w-full gap-2 flex-col lg:flex-row justify-between px-12 md:px-24 lg:px-40 xl:px-52 z-30">
-        <ProjectImages images={projects?.[`${activeWork}`]?.images?.mobile} type="mobile" projectName={activeWork} />
+        {projects?.[`${activeWork}`]?.images?.mobile.map((image, index) => {
+          const heightClass = `h-${activeWork}-mobile-${index + 1}`;
+          return (
+            <div
+              ref={addToRefs} // Add ref only for desktop
+              key={activeWork + index}
+              className={`w-full lg:w-[49%] ${heightClass}`}
+            >
+              {projects?.[`${activeWork}`]?.link ? (
+                <Link
+                  href={projects?.[`${activeWork}`]?.link}
+                  className="mouseLink"
+                  target="_blank"
+                >
+                  <Canvas dpr={1} resize={{ scroll: false }}>
+                    <ProjectSingleImageCanvas
+                      cover={image.url}
+                      imageAspect={image.height / image.width}
+                    />
+                    <OrthographicCamera
+                      manual
+                      left={-1}
+                      right={1}
+                      top={1}
+                      bottom={-1}
+                      near={0}
+                      far={1}
+                      makeDefault
+                    />
+                  </Canvas>
+                </Link>
+              ) : (
+                <Canvas dpr={1} resize={{ scroll: false }}>
+                  <ProjectSingleImageCanvas
+                    cover={image.url}
+                    imageAspect={image.height / image.width}
+                  />
+                  <OrthographicCamera
+                    manual
+                    left={-1}
+                    right={1}
+                    top={1}
+                    bottom={-1}
+                    near={0}
+                    far={1}
+                    makeDefault
+                  />
+                </Canvas>
+              )}
+            </div>
+          );
+        })}
       </div>
       <div
         ref={nextWorkRef}

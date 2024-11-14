@@ -7,12 +7,6 @@ import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 const ProjectImages = ({ images, type, projectName }) => {
   const worksRef = useRef([]);
 
-  const addToRefs = (item) => {
-    if (item && !worksRef.current.includes(item)) {
-      worksRef.current.push(item);
-    }
-  };
-
   // GSAP animation logic
   useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -25,6 +19,7 @@ const ProjectImages = ({ images, type, projectName }) => {
           end: "top+=30% bottom",
           toggleActions: "play pause resume reverse",
           scrub: true,
+          markers: true
         },
       });
       tl.set(item.querySelectorAll("div"), { y: 30, scale: 0.9 });
@@ -35,19 +30,32 @@ const ProjectImages = ({ images, type, projectName }) => {
     });
   }, [worksRef]);
 
+  const addToRefs = (item) => {
+    if (item && !worksRef.current.includes(item)) {
+      worksRef.current.push(item);
+    }
+  };
+
+
   return (
     <>
-      {images.map((image, index) => (
-        <ProjectImage
-          ref={type === "desktop" ? addToRefs : null} key={index + projectName}
-          image={image}
-          type={type}
-          projectName={projectName}
-          index={index}
+      {images.map((image, index) => {
+        const heightClass = `h-${projectName}-${type}-${index + 1}`;
+        const containerClass = type === "mobile" ? "w-full lg:w-[49%]" : "w-full mb-12";
 
-          // Attach the ref to each image
-        />
-      ))}
+        return (
+          <div
+            ref={type === "desktop" ? addToRefs : null } // Add ref only for desktop
+            key={projectName + index}
+            className={`${containerClass} ${heightClass}`}
+          >
+            <ProjectImage
+              image={image}
+              index={index}
+            />
+          </div>
+        );
+      })}
     </>
   );
 };

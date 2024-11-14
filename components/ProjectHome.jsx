@@ -208,7 +208,7 @@ export default function ProjectHome({ project, index }) {
             )}
             <div
               ref={titleRef}
-              className="absolute truncate h-[303px] -left-36 -bottom-[2rem] mix-blend-exclusion font-humane text-[24rem] leading-none uppercase z-20"
+              className="absolute truncate h-[303px] -left-36 xl:-bottom-[10.8rem] 2xl:-bottom-[2rem] mix-blend-exclusion font-humane xl:text-[19rem] 2xl:text-[24rem] leading-none uppercase z-20"
             >
               {project.title}
             </div>

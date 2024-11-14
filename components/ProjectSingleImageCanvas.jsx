@@ -20,7 +20,7 @@ export default function ProjectSingleImageCanvas({ cover, imageAspect }) {
 
   useLenis(({ velocity }) => {
     velocityPrev = gsap.utils.interpolate(velocityPrev, velocity * 0.005, 0.2);
-    shaderRef.current.uVelocity = velocityPrev;
+    if(velocityPrev) shaderRef.current.uVelocity = velocityPrev;
   });
 
   // Make the texture image have "cover" effect
@@ -36,7 +36,7 @@ export default function ProjectSingleImageCanvas({ cover, imageAspect }) {
           size.height / size.width / imageAspect;
       }
     }
-  }, [size]);
+  }, [size, imageAspect]);
 
   return (
     <>

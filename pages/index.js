@@ -52,6 +52,7 @@ export default function Home({ works }) {
           x: 0,
           duration: 1,
           ease: "expo.out",
+          marker: true
         }
       );
       timeline.add(
@@ -97,7 +98,7 @@ export default function Home({ works }) {
         <div className="h-screen w-full flex items-center justify-end">
           <h1
             ref={textRef}
-            className="uppercase font-humane text-white text-[14rem] mr-[10%] text-right leading-[12rem] mix-blend-exclusion opacity-0"
+            className="uppercase font-humane text-white text-[14rem] mr-[10%] text-right leading-[12rem] mix-blend-exclusion opacity-0 xl:text-[12rem] xl:leading-[10rem]"
           >
             MEHDI M’CIRDI
             <br />
