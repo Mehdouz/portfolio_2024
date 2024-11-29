@@ -44,6 +44,7 @@ export default function ProjectHome({ project, index }) {
     const titleChars = titleText.chars;
 
     gsap.registerPlugin(ScrollTrigger);
+    let mm = gsap.matchMedia();
 
     const textRevealAnimation = gsap.timeline({
       scrollTrigger: {
@@ -93,20 +94,41 @@ export default function ProjectHome({ project, index }) {
         }
       );
 
-      gsap.fromTo(
-        titleRef.current,
-        { y: 0 },
+      const revealCategory = gsap.timeline({
+        scrollTrigger: {
+          trigger: rootRef.current,
+          start: "bottom-=100px bottom",
+          toggleActions: "play pause resume reverse",
+        },
+      });
+
+      revealCategory.fromTo(
+        categoryRef.current,
+        { y: -30, opacity: 0 },
         {
-          y: -300,
+          y: 0,
+          opacity: 1,
+          duration: 0.5,
           ease: "power3.out",
-          scrollTrigger: {
-            trigger: titleRef.current,
-            start: "100px bottom",
-            toggleActions: "play pause resume reverse",
-            scrub: true,
-          },
         }
       );
+
+      mm.add("(min-width: 770px)", () => {
+        gsap.fromTo(
+          titleRef.current,
+          { yPercent: 0 },
+          {
+            yPercent: -100,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: titleRef.current,
+              start: "100px bottom",
+              toggleActions: "play pause resume reverse",
+              scrub: true,
+            },
+          }
+        );
+      });
     }, rootRef);
 
     timeline.add(
@@ -161,8 +183,13 @@ export default function ProjectHome({ project, index }) {
     return () => ctx.revert();
   }, []);
 
+  const title = project?.title.replace(/\s/g, "");
+
   return (
-    <div ref={rootRef} className="container mx-auto px-32 mb-44 aspect-video">
+    <div
+      ref={rootRef}
+      className="container mb-20 md:mb-0 md:mx-auto md:px-12 lg:px-32 lg:mb-4  aspect-video"
+    >
       <div
         ref={overlayRef}
         className="overlay none fixed top-0 left-0 w-full h-full pointer-events-none bg-zinc-950 z-[100]"
@@ -173,7 +200,7 @@ export default function ProjectHome({ project, index }) {
         ></div>
       </div>
       <Link
-        href={`work/${project?.title}`}
+        href={`work/${title}`}
         className="mouseLink"
         scroll={false}
         onClick={handleProjectClick}
@@ -183,10 +210,10 @@ export default function ProjectHome({ project, index }) {
             {!isClicked && (
               <ul
                 ref={projectListRef}
-                className="absolute top-8 left-8 font-roobert text-xs object-fit z-20"
+                className="absolute text-[10px] top-4 left-4 font-roobert object-fit z-20 md:top-6 md:left-6 md:text-xs lg:top-8 lg:left-8"
               >
                 {project.technologies?.map((techno, index) => (
-                  <li key={index} className="technoItem mb-0.5 font-roobert">
+                  <li key={index} className="technoItem mb-0.3 font-roobert md:mb-0.5">
                     {techno}
                   </li>
                 ))}
@@ -194,21 +221,21 @@ export default function ProjectHome({ project, index }) {
             )}
             {!isClicked && (
               <ProjectNumber
-                className="absolute top-8 right-8 font-roobert text-5xl z-20"
+                className="absolute top-4 right-4 md:top-6 md:right-6 lg:top-8 lg:right-8 font-roobert text-2xl sm:text-3xl xl:text-4xl 2xl:text-5xl z-20"
                 index={index + 1}
               />
             )}
             {!isClicked && (
               <p
                 ref={categoryRef}
-                className="absolute bottom-8 right-8 font-roobert text-5xl z-20"
+                className="absolute font-roobert bottom-4 right-4 text-2xl md:bottom-6 md:right-6 lg:bottom-8 lg:right-8  sm:text-3xl xl:text-4xl 2xl:text-5xl z-20"
               >
                 {project?.sector}
               </p>
             )}
             <div
               ref={titleRef}
-              className="absolute truncate h-[303px] -left-36 xl:-bottom-[10.8rem] 2xl:-bottom-[2rem] mix-blend-exclusion font-humane xl:text-[19rem] 2xl:text-[24rem] leading-none uppercase z-20"
+              className="absolute truncate font-humane leading-none uppercase text-[4rem] tracking-wide left-4 bottom-[0.3rem] sm:text-[8rem] sm:h-[170px] sm:left-6 sm:-bottom-[3.3rem] md:mix-blend-exclusion md:text-[10rem] md:h-[190px] md:-left-16 md:-bottom-[8.3rem] lg:h-[230px] lg:text-[12rem] lg:-left-24 lg:-bottom-[8.3rem] xl:h-[303px] xl:-left-36 xl:-bottom-[10.8rem] xl:text-[17rem] 2xl:-bottom-[2rem] 2xl:text-[22rem] z-20"
             >
               {project.title}
             </div>

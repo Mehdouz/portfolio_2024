@@ -52,7 +52,7 @@ export default function Home({ works }) {
           x: 0,
           duration: 1,
           ease: "expo.out",
-          marker: true
+          marker: true,
         }
       );
       timeline.add(
@@ -72,7 +72,7 @@ export default function Home({ works }) {
   return (
     <main
       ref={rootRef}
-      className={`px-20 ${fugaz.variable} ${ibm_flex_mono.variable} ${humane.variable} ${roobert.variable} ${avenir.variable}`}
+      className={`px-10 md:px-20 ${fugaz.variable} ${ibm_flex_mono.variable} ${humane.variable} ${roobert.variable} ${avenir.variable}`}
     >
       <AnimatedCursor
         innerSize={0}
@@ -87,18 +87,16 @@ export default function Home({ works }) {
         innerStyle={{
           whiteSpace: "nowrap",
         }}
-        clickables={[
-          ".mouseLink",
-        ]}
+        clickables={[".mouseLink"]}
         trailingSpeed={10}
         mouseText="View Project"
         textClass="font-ibm text-sm"
       />
       <div className="relative">
-        <div className="h-screen w-full flex items-center justify-end">
+        <div className="h-screen w-full flex items-center justify-center md:justify-end">
           <h1
             ref={textRef}
-            className="uppercase font-humane text-white text-[14rem] mr-[10%] text-right leading-[12rem] mix-blend-exclusion opacity-0 xl:text-[12rem] xl:leading-[10rem]"
+            className="uppercase font-humane text-[#0f151f] px-10 text-center opacity-0 text-[4rem] leading-[3.5rem] sm:text-[5rem] sm:leading-[4rem] md:text-right md:mr-[10%] md:text-[6rem] md:leading-[5rem] md:px-0 lg:text-white lg:text-[8rem] lg:leading-[7rem] lg:mix-blend-exclusion xl:leading-[8.5rem] xl:text-[10rem] 2xl:leading-[10.5rem] 2xl:text-[12rem]"
           >
             MEHDI M’CIRDI
             <br />

@@ -59,7 +59,7 @@ export default function ProjectNumber({ index, ...props }) {
           delay: 0.6,
           scrollTrigger: {
             trigger: rootRef.current,
-            start: "150px bottom",
+            start: "top+=250px bottom",
             toggleActions: "play pause resume reverse",
             onEnter: () => animateNumber(),
           },

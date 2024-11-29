@@ -15,7 +15,6 @@ import Link from "next/link";
 import useIsomorphicLayoutEffect from "@/hooks/useIsomorphicLayoutEffect";
 import Image from "next/image";
 import AnimatedCursor from "@/hooks/useCursor";
-import ProjectImages from "@/components/ProjectImages";
 
 const humane = localFont({
   src: "../../public/fonts/humaneBold.woff2",
@@ -96,25 +95,6 @@ export default function Work({ activeWork, nextWork }) {
     setIsFirstLoad(false);
   });
 
-  useIsomorphicLayoutEffect(() => {
-    const scrollTop = () => {
-      window.scrollTo(0, 0);
-    };
-
-    const handleResize = () => {
-      ScrollTrigger.addEventListener("refresh", () => {
-        if (window.scrollY < nextWorkRef.current.offsetTop + 1) scrollTop();
-      });
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      ScrollTrigger.removeEventListener("refresh", scrollTop);
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
   useEffect(() => {
     setActualWork(activeWork);
     setNextWork(nextWork);
@@ -170,8 +150,8 @@ export default function Work({ activeWork, nextWork }) {
       const nextProjectAnimation = gsap.timeline({
         scrollTrigger: {
           trigger: nextWorkRef.current,
-          start: "top+=40% top",
-          end: "bottom top",
+          start: "top-=40% top",
+          end: "top top",
           toggleActions: "play pause resume reverse",
           scrub: true,
           onLeave: redirectWithoutTimeline,
@@ -195,7 +175,6 @@ export default function Work({ activeWork, nextWork }) {
           end: "bottom top",
           toggleActions: "play pause resume reverse",
           scrub: 0.2,
-          pin: true,
           invalidateOnRefresh: true,
         },
       });
@@ -207,19 +186,11 @@ export default function Work({ activeWork, nextWork }) {
         scale: 0.62,
       });
 
-      firstScrolAnimation.to(
-        coverRef.current,
-        {
-          scale: 0.9,
-        },
-        "="
-      );
-
       // Animation teh menu sides
       const sideMenu = gsap.timeline({
         scrollTrigger: {
           trigger: rootRef.current,
-          start: "bottom+=20px bottom",
+          start: "bottom top+=25%",
           end: "+=300px",
           toggleActions: "play pause resume reverse",
           autoRound: false,
@@ -232,6 +203,7 @@ export default function Work({ activeWork, nextWork }) {
         opacity: 0,
         display: "none",
       });
+
       gsap.set(contactRef.current, {
         letterSpacing: 5,
         opacity: 0,
@@ -249,7 +221,6 @@ export default function Work({ activeWork, nextWork }) {
 
       sideMenu.to(
         contactRef.current,
-
         {
           display: "block",
           opacity: 1,
@@ -275,11 +246,56 @@ export default function Work({ activeWork, nextWork }) {
         "="
       );
 
+      const sideMenuClearing = gsap.timeline({
+        scrollTrigger: {
+          trigger: nextWorkRef.current,
+          start: "top-=70% top",
+          end: "+=200px",
+          toggleActions: "play pause resume reverse",
+          autoRound: false,
+          scrub: true,
+        },
+      });
+
+      sideMenuClearing.to(
+        backHomeRef.current,
+        {
+          opacity: 0,
+        },
+        "="
+      );
+
+      sideMenuClearing.to(
+        contactRef.current,
+        {
+          opacity: 0,
+        },
+        "="
+      );
+
+      sideMenuClearing.to(
+        backHomeRef.current,
+        {
+          letterSpacing: 5,
+          autoRound: false,
+        },
+        "="
+      );
+
+      sideMenuClearing.to(
+        contactRef.current,
+        {
+          letterSpacing: 5,
+          autoRound: false,
+        },
+        "="
+      );
+
       // Informations projet animations
       const infosAnimation = gsap.timeline({
         scrollTrigger: {
           trigger: rootRef.current,
-          start: "top+=100px bottom",
+          start: "bottom top+=70%",
           toggleActions: "play pause resume reverse",
         },
       });
@@ -371,7 +387,7 @@ export default function Work({ activeWork, nextWork }) {
         textClass="font-ibm text-[13px]"
         showSystemCursor={false}
       />
-      <div className="w-[100vh] flex justify-center rotate-90 origin-top-left p-6 font-roobert uppercase fixed top-0 left-[55px] lg:left-[80px] z-40">
+      <div className="w-[100vh] flex justify-center rotate-90 origin-top-left p-4 md:p-6 font-roobert uppercase fixed top-0 left-[55px] sm:left-[70px] md:left-[80px] z-40">
         {router?.pathname !== "/" && (
           <Link
             ref={backHomeRef}
@@ -385,7 +401,7 @@ export default function Work({ activeWork, nextWork }) {
           </Link>
         )}
       </div>
-      <div className="w-[100vh] flex justify-center -rotate-90 origin-top-right p-6 font-roobert uppercase fixed top-0 right-[55px] lg:right-[80px] z-40">
+      <div className="w-[100vh] flex justify-center -rotate-90 origin-top-right p-6 font-roobert uppercase fixed top-0 right-[70px] md:right-[80px] z-40">
         {router?.pathname !== "/" && (
           <a
             ref={contactRef}
@@ -428,7 +444,7 @@ export default function Work({ activeWork, nextWork }) {
           </Canvas>
         </div>
       </div>
-      <div className="relative flex justify-center gap-[15%] px-24 font-ibm uppercase text-grey-50 text-[11px] tracking-widest">
+      <div className="relative flex justify-center gap-[10%] px-12 md:gap-[20%] md:px-24 mt-12 mb-12 lg:mb-0 font-ibm uppercase text-grey-50 text-[10px] md:text-[11px] tracking-widest">
         <div>
           <h2 className="clientItem pb-1 font-semibold antialiased">
             Client :
@@ -460,7 +476,7 @@ export default function Work({ activeWork, nextWork }) {
           </ul>
         </div>
       </div>
-      <div className="relative container mx-auto px-12 md:px-24 lg:px-40 xl:px-52 xl:mt-12 z-30">
+      <div className="relative max-w-[420px] min-w-[420px] mx-auto md:container md:mx-auto px-12 md:px-24 lg:px-40 xl:px-52 xl:mt-12 z-30">
         {projects?.[`${activeWork}`]?.images?.desktop.map((image, index) => {
           const heightClass = `h-${activeWork}-desktop-${index + 1}`;
           return (
@@ -514,7 +530,7 @@ export default function Work({ activeWork, nextWork }) {
           );
         })}
       </div>
-      <div className="relative container mx-auto flex w-full gap-2 flex-col lg:flex-row justify-between px-12 md:px-24 lg:px-40 xl:px-52 z-30">
+      <div className="relative max-w-[420px] min-w-[420px] mx-auto md:container flex w-full gap-2 flex-col lg:flex-row justify-between px-12 md:px-24 lg:px-40 xl:px-56 z-30">
         {projects?.[`${activeWork}`]?.images?.mobile.map((image, index) => {
           const heightClass = `h-${activeWork}-mobile-${index + 1}`;
           return (
@@ -570,7 +586,7 @@ export default function Work({ activeWork, nextWork }) {
       </div>
       <div
         ref={nextWorkRef}
-        className="w-screen h-screen max-w-full relative z-50 block"
+        className="w-screen h-screen max-w-full relative mt-12 z-50 block"
       >
         <div className="w-full h-full overflow-hidden">
           <Image
