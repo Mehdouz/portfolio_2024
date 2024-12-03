@@ -28,6 +28,8 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+    min-width:420px;        /* Suppose you want minimum width of 1000px */
+    width: auto !important;
 }
 
 @layer utilities {

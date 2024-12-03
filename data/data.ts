@@ -1,7 +1,7 @@
 export const projects = {
   angie: {
     title: "angie",
-    client: "angie agency",
+    client: "angie",
     cover: "/projets/angie/angie.jpg",
     technologies: ["REACT", "WORDPRESS", "HTML5", "JAVASCRIPT"],
     role: ["intégration", "animations"],

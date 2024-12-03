@@ -387,7 +387,7 @@ export default function Work({ activeWork, nextWork }) {
         textClass="font-ibm text-[13px]"
         showSystemCursor={false}
       />
-      <div className="w-[100vh] flex justify-center rotate-90 origin-top-left p-4 md:p-6 font-roobert uppercase fixed top-0 left-[55px] sm:left-[70px] md:left-[80px] z-40">
+      <div className="w-[100vh] flex justify-center rotate-90 origin-top-left p-4 md:p-6 font-roobert uppercase fixed top-0 left-[50px] sm:left-[70px] md:left-[80px] z-40">
         {router?.pathname !== "/" && (
           <Link
             ref={backHomeRef}
@@ -401,7 +401,7 @@ export default function Work({ activeWork, nextWork }) {
           </Link>
         )}
       </div>
-      <div className="w-[100vh] flex justify-center -rotate-90 origin-top-right p-6 font-roobert uppercase fixed top-0 right-[70px] md:right-[80px] z-40">
+      <div className="w-[100vh] flex justify-center -rotate-90 origin-top-right p-6 font-roobert uppercase fixed top-0 right-[60px] md:right-[80px] z-40">
         {router?.pathname !== "/" && (
           <a
             ref={contactRef}
@@ -417,10 +417,14 @@ export default function Work({ activeWork, nextWork }) {
       <div ref={rootRef} className="relative block">
         <h1
           ref={titleRef}
-          className="absolute top-2/4 left-2/4 font-humane mix-blend-exclusion text-[12rem] md:text-[18rem] lg:text-[22rem] leading-none uppercase truncate z-30"
+          className="absolute top-2/4 left-2/4 font-humane text-white md:mix-blend-exclusion text-[9rem] sm:text-[12rem] md:text-[14rem] lg:text-[18rem] leading-none uppercase truncate z-30"
         >
-          {projects?.[`${activeWork}`]?.title}
+          {projects?.[`${activeWork}`]?.client}
         </h1>
+        <div
+
+          className="absolute w-full h-full left-0 top-0 bg-slate-900 opacity-30 md:hidden z-20"
+        ></div>
         <div
           ref={coverRef}
           className="cover relative h-screen w-screen max-w-full text-8xl z-10 overflow-hidden aspect-[1400/2100]"
@@ -476,6 +480,7 @@ export default function Work({ activeWork, nextWork }) {
           </ul>
         </div>
       </div>
+      {projects?.[`${activeWork}`]?.link && <Link className="flex text-[14px] tracking-wider uppercase items-center justify-center p-2 px-6 max-w-[300px] text-[#0f151f] mx-auto mb-6 mt-3 rounded-md border border-[#0f151f] md:hidden" href={projects?.[`${activeWork}`]?.link} target="_blank">Visit Website</Link>}
       <div className="relative max-w-[420px] min-w-[420px] mx-auto md:container md:mx-auto px-12 md:px-24 lg:px-40 xl:px-52 xl:mt-12 z-30">
         {projects?.[`${activeWork}`]?.images?.desktop.map((image, index) => {
           const heightClass = `h-${activeWork}-desktop-${index + 1}`;
@@ -584,9 +589,10 @@ export default function Work({ activeWork, nextWork }) {
           );
         })}
       </div>
+      <Link className="flex text-[14px] tracking-wider items-center justify-center p-2 max-w-[300px] text-[#0f151f] mx-auto mb-10 mt-3 rounded-md border border-[#0f151f] uppercase font-roobert md:hidden" href={nextWork}>Next project</Link>
       <div
         ref={nextWorkRef}
-        className="w-screen h-screen max-w-full relative mt-12 z-50 block"
+        className="hidden w-screen h-screen max-w-full relative mt-12 z-50 sm:block"
       >
         <div className="w-full h-full overflow-hidden">
           <Image
