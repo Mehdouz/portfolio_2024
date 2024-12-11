@@ -151,7 +151,7 @@ export default function Work({ activeWork, nextWork }) {
         scrollTrigger: {
           trigger: nextWorkRef.current,
           start: "top-=40% top",
-          end: "top top",
+          end: "top-=1px top",
           toggleActions: "play pause resume reverse",
           scrub: true,
           onLeave: redirectWithoutTimeline,
